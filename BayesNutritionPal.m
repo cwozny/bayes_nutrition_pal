@@ -61,29 +61,85 @@ end
 
 fclose(fid);
 
+%% Read in basal energy data
+
+fprintf('%s - Reading in basal energy data\n', datetime)
+
+basal_start_datetime = [];
+basal_end_datetime = [];
+basal_calories = [];
+
+fid = fopen("AppleWatchBasalEnergy.csv","r");
+
+line = fgetl(fid); % skip header line
+
+while ~feof(fid)
+    line = fgetl(fid);
+    tokens = split(line,',');
+    basal_start_datetime = [basal_start_datetime; datetime(tokens{1})];
+    basal_end_datetime = [basal_end_datetime; datetime(tokens{2})];
+    basal_calories = [basal_calories; str2double(tokens{3})];
+end
+
+fclose(fid);
+
+%% Read in active energy data
+
+fprintf('%s - Reading in active energy data\n', datetime)
+
+active_start_datetime = [];
+active_end_datetime = [];
+active_calories = [];
+
+fid = fopen("AppleWatchActiveEnergy.csv","r");
+
+line = fgetl(fid); % skip header line
+
+while ~feof(fid)
+    line = fgetl(fid);
+    tokens = split(line,',');
+    active_start_datetime = [active_start_datetime; datetime(tokens{1})];
+    active_end_datetime = [active_end_datetime; datetime(tokens{2})];
+    active_calories = [active_calories; str2double(tokens{3})];
+end
+
+fclose(fid);
+
 %% Plot data
+
+fprintf('%s - Plotting data\n', datetime)
 
 hFig=figure;
 
-hAx=subplot(4,1,1);
+hAx=subplot(6,1,1);
 plot(weight_datetime,weight,'.')
 grid on
 ylabel('Weight (lbs)')
 
-hAx(2)=subplot(4,1,2);
+hAx(2)=subplot(6,1,2);
 plot(weight_datetime,fat,'.')
 grid on
 ylabel('Fat (lbs)')
 
-hAx(3)=subplot(4,1,3);
+hAx(3)=subplot(6,1,3);
 plot(glucose_datetime,glucose,'.')
 grid on
 ylabel('Glucose (mg/dL)')
 
-hAx(4)=subplot(4,1,4);
+hAx(4)=subplot(6,1,4);
 plot(ketones_datetime,ketones,'.')
 grid on
 ylabel('Ketones (mmol/L)')
+
+hAx(5)=subplot(6,1,5);
+plot(basal_start_datetime,basal_calories,'.')
+grid on
+ylabel('Basal Energy (cal)')
+
+hAx(6)=subplot(6,1,6);
+plot(active_start_datetime,active_calories,'.')
+grid on
+ylabel('Active Energy (cal)')
 
 linkaxes(hAx,'x')
 
