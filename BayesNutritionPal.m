@@ -143,9 +143,12 @@ ylabel('Active Energy (cal)')
 
 linkaxes(hAx,'x')
 
-xlim([datetime(2023,2,7) datetime(2023,11,17)])
+minDay = dateshift(min(glucose_datetime),'start','days');
+maxDay = dateshift(max(glucose_datetime),'end','days');
 
-saveas(hFig,'weight_glucose_ketone_data','png')
+xlim([minDay maxDay]);
+
+saveas(hFig,'all_data','png')
 
 hFig=figure;
 histogram(glucose,60:1:130)
