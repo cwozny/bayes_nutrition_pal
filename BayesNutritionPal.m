@@ -214,28 +214,89 @@ fid = fopen('data.csv','w');
 
 fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Active Energy (cal),Basal Energy (cal),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),End Weight (lbs)\n');
 
+startPeriod = [];
+endPeriod = [];
+startWeight = [];
+endWeight = [];
+activeCals = [];
+basalCals = [];
+nutritionCals = [];
+nutritionTotalCarbs = [];
+nutritionProtein = [];
+nutritionTotalFats = [];
+
 for ii = 2:length(weight_datetime)
-    startPeriod = weight_datetime(ii-1);
-    endPeriod = weight_datetime(ii);
+    beginEvalTime = weight_datetime(ii-1);
+    endEvalTime = weight_datetime(ii);
 
-    if duration(endPeriod - startPeriod) < hours(29)
-        startWeight = weight(ii-1);
-        endWeight = weight(ii);
+    if duration(endEvalTime - beginEvalTime) < hours(29)
+        startPeriod = [startPeriod; beginEvalTime];
+        endPeriod = [endPeriod; endEvalTime];
 
-        activeCalIdx = startPeriod <= active_start_datetime & active_start_datetime <= endPeriod;
-        activeCals = sum(active_calories(activeCalIdx));
+        startWeight = [startWeight; weight(ii-1)];
+        endWeight = [endWeight; weight(ii)];
+        activeCalIdx = beginEvalTime <= active_start_datetime & active_start_datetime <= endEvalTime;
+        activeCals = [activeCals; sum(active_calories(activeCalIdx))];
 
-        basalCalIdx = startPeriod <= basal_start_datetime & basal_start_datetime <= endPeriod;
-        basalCals = sum(basal_calories(basalCalIdx));
+        basalCalIdx = beginEvalTime <= basal_start_datetime & basal_start_datetime <= endEvalTime;
+        basalCals = [basalCals; sum(basal_calories(basalCalIdx))];
 
-        nutritionIdx = startPeriod <= nutrition_datetime & nutrition_datetime <= endPeriod;
-        nutritionCals = sum(nutrition_calories(nutritionIdx));
-        nutritionTotalCarbs = sum(nutrition_total_carbs(nutritionIdx));
-        nutritionProtein = sum(nutrition_protein(nutritionIdx));
-        nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
+        nutritionIdx = beginEvalTime <= nutrition_datetime & nutrition_datetime <= endEvalTime;
+        nutritionCals = [nutritionCals; sum(nutrition_calories(nutritionIdx))];
+        nutritionTotalCarbs = [nutritionTotalCarbs; sum(nutrition_total_carbs(nutritionIdx))];
+        nutritionProtein = [nutritionProtein; sum(nutrition_protein(nutritionIdx))];
+        nutritionTotalFats = [nutritionTotalFats; sum(nutrition_total_fats(nutritionIdx))];
 
-        fprintf(fid,'%s,%s,%1.2f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f\n', startPeriod, endPeriod, startWeight, activeCals, basalCals, nutritionCals, nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, endWeight);
+        fprintf(fid,'%s,%s,%1.2f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f\n', startPeriod(end), endPeriod(end), startWeight(end), activeCals(end), basalCals(end), nutritionCals(end), nutritionTotalCarbs(end), nutritionProtein(end), nutritionTotalFats(end), endWeight(end));
     end
 end
 
 fclose(fid);
+
+%% Plot data
+
+fprintf('%s - Plotting data\n', datetime)
+
+hFig=figure;
+
+hAx=subplot(7,1,1);
+plot(startPeriod,startWeight,'.')
+grid on
+ylabel('Weight (lbs)')
+
+hAx(2)=subplot(7,1,2);
+plot(startPeriod,basalCals,'.')
+grid on
+ylabel('Basal Energy (cal)')
+
+hAx(3)=subplot(7,1,3);
+plot(startPeriod,activeCals,'.')
+grid on
+ylabel('Active Energy (cal)')
+
+hAx(4)=subplot(7,1,4);
+plot(startPeriod,nutritionCals,'.')
+grid on
+ylabel('Nutritional Energy (cal)')
+
+hAx(5)=subplot(7,1,5);
+plot(startPeriod,nutritionTotalCarbs,'.')
+grid on
+ylabel('Total Carbs (g)')
+
+hAx(6)=subplot(7,1,6);
+plot(startPeriod,nutritionProtein,'.')
+grid on
+ylabel('Protein (g)')
+
+hAx(7)=subplot(7,1,7);
+plot(startPeriod,nutritionTotalFats,'.')
+grid on
+ylabel('Total Fats (g)')
+
+linkaxes(hAx,'x')
+
+minDay = dateshift(min(glucose_datetime),'start','days');
+maxDay = dateshift(max(glucose_datetime),'end','days');
+
+xlim([minDay maxDay]);
