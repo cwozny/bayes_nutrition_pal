@@ -135,6 +135,8 @@ while ~feof(fid)
     nutrition_sugar_alcohol = [nutrition_sugar_alcohol; str2double(tokens{8})];
 end
 
+fclose(fid);
+
 nutrition_calories(isnan(nutrition_calories)) = 0;
 nutrition_total_carbs(isnan(nutrition_total_carbs)) = 0;
 nutrition_protein(isnan(nutrition_protein)) = 0;
@@ -142,8 +144,6 @@ nutrition_total_fats(isnan(nutrition_total_fat)) = 0;
 nutrition_sugar(isnan(nutrition_sugar)) = 0;
 nutrition_fiber(isnan(nutrition_fiber)) = 0;
 nutrition_sugar_alcohol(isnan(nutrition_sugar_alcohol)) = 0;
-
-fclose(fid);
 
 %% Plot data
 
