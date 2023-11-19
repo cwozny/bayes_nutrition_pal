@@ -36,7 +36,7 @@ line = fgetl(fid); % skip header line
 
 while ~feof(fid)
     line = fgetl(fid);
-    tokens = strrep(split(line,','),"""",'');
+    tokens = strrep(split(line,'","'),"""",'');
 
     dateStr = strrep(tokens{1},"""",'');
     timeStr = strrep(tokens{2},"""",'');
