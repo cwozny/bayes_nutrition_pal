@@ -7,9 +7,19 @@ fprintf('%s - Clearing everything out\n', datetime)
 close all
 clearvars
 
+%% Get file from user
+
+fprintf('%s - Getting filename from user\n', datetime)
+
+[file,path] = uigetfile('FoodNoms Food Log.csv');
+
+if isequal(file,0)
+   disp('User selected Cancel');
+end
+
 %% Read in food data
 
-fprintf('%s - Reading in food data\n', datetime)
+fprintf('%s - Reading in food data from %s\n', datetime, fullfile(path,file))
 
 food_datetime = [];
 food_calories = [];
@@ -20,16 +30,16 @@ sugar = [];
 fiber = [];
 sugar_alcohols = [];
 
-fid = fopen("FoodNoms Food Log.csv","r");
+fid = fopen(fullfile(path,file),'r');
 
 line = fgetl(fid); % skip header line
 
 while ~feof(fid)
     line = fgetl(fid);
-    tokens = strrep(split(line,','),"""","");
+    tokens = strrep(split(line,','),"""",'');
 
-    dateStr = strrep(tokens{1},"""","");
-    timeStr = strrep(tokens{2},"""","");
+    dateStr = strrep(tokens{1},"""",'');
+    timeStr = strrep(tokens{2},"""",'');
     timeStr = strrep(timeStr,char(8239),' ');
     
     food_datetime = [food_datetime; datetime(char(dateStr + ' ' + timeStr))];
@@ -67,12 +77,12 @@ legend('Total Carbs','Protein','Total Fat','Sugar','Fiber','Sugar Alcohols')
 
 fprintf('%s - Writing out pruned data\n', datetime)
 
-fid = fopen("FoodNomsPrunedData.csv","w");
+fid = fopen('FoodNomsPrunedData.csv','w');
 
-fprintf(fid,"Date/Time,Calories (cal),Total Carbs (g),Protein (g),Total Fat (g),Sugar (g),Fiber(g),Sugar Alcohols (g)\n");
+fprintf(fid,'Date/Time,Calories (cal),Total Carbs (g),Protein (g),Total Fat (g),Sugar (g),Fiber(g),Sugar Alcohols (g)\n');
 
 for ii = 1:length(food_datetime)
-    fprintf(fid,"%s,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f\n", food_datetime(ii), food_calories(ii), total_carbs(ii), protein(ii), total_fat(ii), sugar(ii), fiber(ii), sugar_alcohols(ii));
+    fprintf(fid,'%s,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f\n', food_datetime(ii), food_calories(ii), total_carbs(ii), protein(ii), total_fat(ii), sugar(ii), fiber(ii), sugar_alcohols(ii));
 end
 
 fclose(fid);
