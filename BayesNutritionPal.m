@@ -138,7 +138,7 @@ end
 nutrition_calories(isnan(nutrition_calories)) = 0;
 nutrition_total_carbs(isnan(nutrition_total_carbs)) = 0;
 nutrition_protein(isnan(nutrition_protein)) = 0;
-nutrition_total_fats(isnan(nutrition_total_fat)) = 0;
+nutrition_total_fats(isnan(nutrition_total_fats)) = 0;
 nutrition_sugar(isnan(nutrition_sugar)) = 0;
 nutrition_fiber(isnan(nutrition_fiber)) = 0;
 nutrition_sugar_alcohol(isnan(nutrition_sugar_alcohol)) = 0;
@@ -210,6 +210,10 @@ saveas(hFig,'ketone_histogram','png')
 
 %% Create feature vectors
 
+fid = fopen('data.csv','w');
+
+fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Active Energy (cal),Basal Energy (cal),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),End Weight (lbs)\n');
+
 for ii = 2:length(weight_datetime)
     startPeriod = weight_datetime(ii-1);
     endPeriod = weight_datetime(ii);
@@ -230,6 +234,8 @@ for ii = 2:length(weight_datetime)
         nutritionProtein = sum(nutrition_protein(nutritionIdx));
         nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
 
-        fprintf('x = %f,%f,%f,%f,%f,%f,%f\ty = %f\n', startWeight, activeCals, basalCals, nutritionCals, nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, endWeight)
+        fprintf(fid,'%s,%s,%1.2f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f\n', startPeriod, endPeriod, startWeight, activeCals, basalCals, nutritionCals, nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, endWeight);
     end
 end
+
+fclose(fid);
