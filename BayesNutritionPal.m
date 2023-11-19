@@ -16,7 +16,7 @@ weight = [];
 bmi = [];
 fat = [];
 
-fid = fopen("FitbitAriaMeasurements.csv","r");
+fid = fopen('FitbitAriaMeasurements.csv','r');
 
 line = fgetl(fid); % skip header line
 
@@ -40,7 +40,7 @@ ketones_datetime = [];
 glucose = [];
 ketones = [];
 
-fid = fopen("KetoMojoReadings.csv","r");
+fid = fopen('KetoMojoReadings.csv','r');
 
 line = fgetl(fid); % skip header line
 
@@ -48,10 +48,10 @@ while ~feof(fid)
     line = fgetl(fid);
     tokens = split(line,',');
 
-    if strcmp(tokens{1},"ketone")
+    if strcmp(tokens{1},'ketone')
         ketones_datetime = [ketones_datetime; datetime([tokens{4} ' ' tokens{5}])];
         ketones = [ketones; str2double(tokens{2})];
-    elseif strcmp(tokens{1},"glucose")
+    elseif strcmp(tokens{1},'glucose')
         glucose_datetime = [glucose_datetime; datetime([tokens{4} ' ' tokens{5}])];
         glucose = [glucose; str2double(tokens{2})];
     else
@@ -69,7 +69,7 @@ basal_start_datetime = [];
 basal_end_datetime = [];
 basal_calories = [];
 
-fid = fopen("AppleWatchBasalEnergy.csv","r");
+fid = fopen('AppleWatchBasalEnergy.csv','r');
 
 line = fgetl(fid); % skip header line
 
@@ -91,7 +91,7 @@ active_start_datetime = [];
 active_end_datetime = [];
 active_calories = [];
 
-fid = fopen("AppleWatchActiveEnergy.csv","r");
+fid = fopen('AppleWatchActiveEnergy.csv','r');
 
 line = fgetl(fid); % skip header line
 
@@ -102,6 +102,46 @@ while ~feof(fid)
     active_end_datetime = [active_end_datetime; datetime(tokens{2})];
     active_calories = [active_calories; str2double(tokens{3})];
 end
+
+fclose(fid);
+
+%% Read in nutrition data
+
+fprintf('%s - Reading in nutrition data\n', datetime)
+
+nutrition_datetime = [];
+nutrition_calories = [];
+nutrition_total_carbs = [];
+nutrition_protein = [];
+nutrition_total_fats = [];
+nutrition_sugar = [];
+nutrition_fiber = [];
+nutrition_sugar_alcohol = [];
+
+fid = fopen('FoodNomsPrunedData.csv','r');
+
+line = fgetl(fid); % skip header line
+
+while ~feof(fid)
+    line = fgetl(fid);
+    tokens = split(line,',');
+    nutrition_datetime = [nutrition_datetime; datetime(tokens{1})];
+    nutrition_calories = [nutrition_calories; str2double(tokens{2})];
+    nutrition_total_carbs = [nutrition_total_carbs; str2double(tokens{3})];
+    nutrition_protein = [nutrition_protein; str2double(tokens{4})];
+    nutrition_total_fats = [nutrition_total_fats; str2double(tokens{5})];
+    nutrition_sugar = [nutrition_sugar; str2double(tokens{6})];
+    nutrition_fiber = [nutrition_fiber; str2double(tokens{7})];
+    nutrition_sugar_alcohol = [nutrition_sugar_alcohol; str2double(tokens{8})];
+end
+
+nutrition_calories(isnan(nutrition_calories)) = 0;
+nutrition_total_carbs(isnan(nutrition_total_carbs)) = 0;
+nutrition_protein(isnan(nutrition_protein)) = 0;
+nutrition_total_fats(isnan(nutrition_total_fat)) = 0;
+nutrition_sugar(isnan(nutrition_sugar)) = 0;
+nutrition_fiber(isnan(nutrition_fiber)) = 0;
+nutrition_sugar_alcohol(isnan(nutrition_sugar_alcohol)) = 0;
 
 fclose(fid);
 
@@ -167,3 +207,29 @@ xlabel('Ketones (mmol/L)')
 title(sprintf('\\mu = %1.1f mg/dL, \\sigma = %1.1f mg/dL', mean(ketones), std(ketones)))
 
 saveas(hFig,'ketone_histogram','png')
+
+%% Create feature vectors
+
+for ii = 2:length(weight_datetime)
+    startPeriod = weight_datetime(ii-1);
+    endPeriod = weight_datetime(ii);
+
+    if duration(endPeriod - startPeriod) < hours(29)
+        startWeight = weight(ii-1);
+        endWeight = weight(ii);
+
+        activeCalIdx = startPeriod <= active_start_datetime & active_start_datetime <= endPeriod;
+        activeCals = sum(active_calories(activeCalIdx));
+
+        basalCalIdx = startPeriod <= basal_start_datetime & basal_start_datetime <= endPeriod;
+        basalCals = sum(basal_calories(basalCalIdx));
+
+        nutritionIdx = startPeriod <= nutrition_datetime & nutrition_datetime <= endPeriod;
+        nutritionCals = sum(nutrition_calories(nutritionIdx));
+        nutritionTotalCarbs = sum(nutrition_total_carbs(nutritionIdx));
+        nutritionProtein = sum(nutrition_protein(nutritionIdx));
+        nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
+
+        fprintf('x = %f,%f,%f,%f,%f,%f,%f\ty = %f\n', startWeight, activeCals, basalCals, nutritionCals, nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, endWeight)
+    end
+end
