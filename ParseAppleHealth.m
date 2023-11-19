@@ -58,7 +58,14 @@ while ~feof(fid)
         
             start_energy_datetime = datetime(line(startDatePos + length(START_STR) + 1 : endDatePos - 3 - 6));
             end_energy_datetime =   datetime(line(endDatePos   + length(END_STR)   + 1 : valuePos   - 3 - 6));
-            calories = str2double(line(valuePos + length(VALUE_STR) + 1 : end - 3));
+
+            if contains(line,'/>')
+                calories = str2double(line(valuePos + length(VALUE_STR) + 1 : end - 3));
+            elseif contains(line,'>') % Bug in Apple's XML file not closing tag out
+                calories = str2double(line(valuePos + length(VALUE_STR) + 1 : end - 2));
+            else
+                warning('Hit line that didn''t have any closing tag')
+            end
 
             if containsBasalEnergyString
                 start_basal_energy_datetime = [start_basal_energy_datetime; start_energy_datetime];
@@ -69,7 +76,7 @@ while ~feof(fid)
                 end_active_energy_datetime = [end_active_energy_datetime; end_energy_datetime];
                 active_calories = [active_calories; calories];
             else
-                'hey'
+                warning('Hit line that didn''t have basal or active energy')
             end
         end
     end
