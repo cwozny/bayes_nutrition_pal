@@ -247,7 +247,29 @@ for ii = 2:length(weight_datetime)
         nutritionProtein = [nutritionProtein; sum(nutrition_protein(nutritionIdx))];
         nutritionTotalFats = [nutritionTotalFats; sum(nutrition_total_fats(nutritionIdx))];
 
-        fprintf(fid,'%s,%s,%1.2f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f\n', startPeriod(end), endPeriod(end), startWeight(end), activeCals(end), basalCals(end), nutritionCals(end), nutritionTotalCarbs(end), nutritionProtein(end), nutritionTotalFats(end), endWeight(end));
+        startGlucoseIdx = beginEvalTime <= glucose_datetime & glucose_datetime <= beginEvalTime + hours(1);
+        endGlucoseIdx = endEvalTime <= glucose_datetime & glucose_datetime <= endEvalTime + hours(1);
+
+        assert(sum(startGlucoseIdx) == 1)
+        assert(sum(endGlucoseIdx) == 1)
+
+        startFastingGlucose = [startFastingGlucose; glucose(startGlucoseIdx)];
+        endFastingGlucose = [endFastingGlucose; glucose(endGlucoseIdx)];
+
+        startKetonesIdx = beginEvalTime <= ketones_datetime & ketones_datetime <= beginEvalTime + hours(1);
+        endKetonesIdx = endEvalTime <= ketones_datetime & ketones_datetime <= endEvalTime + hours(1);
+
+        assert(sum(startKetonesIdx) == 1)
+        assert(sum(endKetonesIdx) == 1)
+
+        startFastingKetones = [startFastingKetones; ketones(startKetonesIdx)];
+        endFastingKetones = [endFastingKetones; ketones(endKetonesIdx)];
+
+        fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', startPeriod(end), endPeriod(end), ...
+            startWeight(end), startFastingGlucose(end), startFastingKetones(end), ...
+            activeCals(end), basalCals(end), nutritionCals(end), ...
+            nutritionTotalCarbs(end), nutritionProtein(end), nutritionTotalFats(end), ...
+            endWeight(end), endFastingGlucose(end), endFastingKetones(end));
     end
 end
 
