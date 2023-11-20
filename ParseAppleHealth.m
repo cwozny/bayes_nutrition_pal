@@ -159,8 +159,7 @@ fid = fopen('AppleWatchSleep.csv','w');
 fprintf(fid,'Start Date/Time,End Date/Time,Duration (secs)\n');
 
 for ii = 1:length(sleep_duration)
-    ii
-    fprintf('%s,%s,%1.1f\n', start_sleep_datetime(ii), end_sleep_datetime(ii), sleep_duration(ii))
+    fprintf(fid,'%s,%s,%1.0f\n', start_sleep_datetime(ii), end_sleep_datetime(ii), sleep_duration(ii));
 end
 
 fclose(fid);
