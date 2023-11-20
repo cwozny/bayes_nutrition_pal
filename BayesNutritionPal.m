@@ -210,9 +210,9 @@ saveas(hFig,'ketone_histogram','png')
 
 %% Create feature vectors
 
-fid = fopen('data.csv','w');
+fid = fopen('AggregatedData.csv','w');
 
-fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Active Energy (cal),Basal Energy (cal),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),End Weight (lbs)\n');
+fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Start Fasting Glucose (mg/dL),Start Fasting Ketones (mmol/L),Active Energy (cal),Basal Energy (cal),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),End Weight (lbs),End Fasting Glucose (mg/dL),End Fasting Ketones (mmol/L)\n');
 
 startPeriod = [];
 endPeriod = [];
@@ -224,22 +224,40 @@ nutritionCals = [];
 nutritionTotalCarbs = [];
 nutritionProtein = [];
 nutritionTotalFats = [];
+startFastingGlucose = [];
+endFastingGlucose = [];
+startFastingKetones = [];
+endFastingKetones = [];
 
 for ii = 2:length(weight_datetime)
     beginEvalTime = weight_datetime(ii-1);
     endEvalTime = weight_datetime(ii);
 
     if duration(endEvalTime - beginEvalTime) < hours(29)
+
+        hasAllData = true;
+
         startPeriod = [startPeriod; beginEvalTime];
         endPeriod = [endPeriod; endEvalTime];
 
         startWeight = [startWeight; weight(ii-1)];
         endWeight = [endWeight; weight(ii)];
+
         activeCalIdx = beginEvalTime <= active_start_datetime & active_start_datetime <= endEvalTime;
         activeCals = [activeCals; sum(active_calories(activeCalIdx))];
 
+        if sum(activeCalIdx) == 0
+            hasAllData = false;
+            warning('No active calorie data for %s to %s', beginEvalTime, endEvalTime)
+        end
+
         basalCalIdx = beginEvalTime <= basal_start_datetime & basal_start_datetime <= endEvalTime;
         basalCals = [basalCals; sum(basal_calories(basalCalIdx))];
+
+        if sum(basalCalIdx) == 0
+            hasAllData = false;
+            warning('No basal calorie data for %s to %s', beginEvalTime, endEvalTime)
+        end
 
         nutritionIdx = beginEvalTime <= nutrition_datetime & nutrition_datetime <= endEvalTime;
         nutritionCals = [nutritionCals; sum(nutrition_calories(nutritionIdx))];
@@ -247,11 +265,23 @@ for ii = 2:length(weight_datetime)
         nutritionProtein = [nutritionProtein; sum(nutrition_protein(nutritionIdx))];
         nutritionTotalFats = [nutritionTotalFats; sum(nutrition_total_fats(nutritionIdx))];
 
+        if sum(nutritionIdx) == 0
+            hasAllData = false;
+            warning('No nutrition data for %s to %s', beginEvalTime, endEvalTime)
+        end
+
         startGlucoseIdx = beginEvalTime <= glucose_datetime & glucose_datetime <= beginEvalTime + hours(1);
         endGlucoseIdx = endEvalTime <= glucose_datetime & glucose_datetime <= endEvalTime + hours(1);
 
-        assert(sum(startGlucoseIdx) == 1)
-        assert(sum(endGlucoseIdx) == 1)
+        if sum(startGlucoseIdx) == 0
+            hasAllData = false;
+            warning('No starting glucose data for %s to %s', beginEvalTime, endEvalTime)
+        end
+
+        if sum(endGlucoseIdx) == 0
+            hasAllData = false;
+            warning('No ending glucose data for %s to %s', beginEvalTime, endEvalTime)
+        end
 
         startFastingGlucose = [startFastingGlucose; glucose(startGlucoseIdx)];
         endFastingGlucose = [endFastingGlucose; glucose(endGlucoseIdx)];
@@ -259,17 +289,26 @@ for ii = 2:length(weight_datetime)
         startKetonesIdx = beginEvalTime <= ketones_datetime & ketones_datetime <= beginEvalTime + hours(1);
         endKetonesIdx = endEvalTime <= ketones_datetime & ketones_datetime <= endEvalTime + hours(1);
 
-        assert(sum(startKetonesIdx) == 1)
-        assert(sum(endKetonesIdx) == 1)
+        if sum(startKetonesIdx) == 0
+            hasAllData = false;
+            warning('No starting ketone data for %s to %s', beginEvalTime, endEvalTime)
+        end
+
+        if sum(endKetonesIdx) == 0
+            hasAllData = false;
+            warning('No ending ketone data for %s to %s', beginEvalTime, endEvalTime)
+        end
 
         startFastingKetones = [startFastingKetones; ketones(startKetonesIdx)];
         endFastingKetones = [endFastingKetones; ketones(endKetonesIdx)];
 
-        fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', startPeriod(end), endPeriod(end), ...
-            startWeight(end), startFastingGlucose(end), startFastingKetones(end), ...
-            activeCals(end), basalCals(end), nutritionCals(end), ...
-            nutritionTotalCarbs(end), nutritionProtein(end), nutritionTotalFats(end), ...
-            endWeight(end), endFastingGlucose(end), endFastingKetones(end));
+        if hasAllData
+            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', startPeriod(end), endPeriod(end), ...
+                startWeight(end), startFastingGlucose(end), startFastingKetones(end), ...
+                activeCals(end), basalCals(end), nutritionCals(end), ...
+                nutritionTotalCarbs(end), nutritionProtein(end), nutritionTotalFats(end), ...
+                endWeight(end), endFastingGlucose(end), endFastingKetones(end));
+        end
     end
 end
 
