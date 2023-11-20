@@ -11,9 +11,14 @@ clearvars
 
 fprintf('%s - Setting constants\n', datetime)
 
+APPLE_WATCH_STR = 'Apple Watch';
+SLEEP_STR = 'HKCategoryTypeIdentifierSleepAnalysis';
 BASAL_ENERGY_STR = 'HKQuantityTypeIdentifierBasalEnergyBurned';
 ACTIVE_ENERGY_STR = 'HKQuantityTypeIdentifierActiveEnergyBurned';
-APPLE_WATCH_STR = 'Apple Watch';
+DEEP_SLEEP_STR = 'HKCategoryValueSleepAnalysisAsleepDeep';
+CORE_SLEEP_STR = 'HKCategoryValueSleepAnalysisAsleepCore';
+REM_SLEEP_STR = 'HKCategoryValueSleepAnalysisAsleepREM';
+UNK_SLEEP_STR = 'HKCategoryValueSleepAnalysisAsleepUnspecified';
 START_STR = 'startDate=';
 END_STR = 'endDate=';
 VALUE_STR = 'value=';
@@ -40,21 +45,28 @@ start_basal_energy_datetime = [];
 end_basal_energy_datetime = [];
 basal_calories = [];
 
+start_sleep_datetime = [];
+end_sleep_datetime = [];
+sleep_duration = [];
+
 fid = fopen(fullfile(path,file),'r');
 
 while ~feof(fid)
     line = fgetl(fid);
 
     containsAppleWatchString = contains(line,APPLE_WATCH_STR);
-    containsBasalEnergyString = contains(line,BASAL_ENERGY_STR);
-    containsActiveEnergyString = contains(line,ACTIVE_ENERGY_STR);
-    containsEnergyString = containsActiveEnergyString || containsBasalEnergyString;
 
     if containsAppleWatchString
-        if containsEnergyString
-            startDatePos = strfind(line,START_STR);
-            endDatePos = strfind(line,END_STR);
-            valuePos = strfind(line,VALUE_STR);
+
+        containsBasalEnergyString = contains(line,BASAL_ENERGY_STR);
+        containsActiveEnergyString = contains(line,ACTIVE_ENERGY_STR);
+        containsSleepString = contains(line,SLEEP_STR);
+
+        startDatePos = strfind(line,START_STR);
+        endDatePos = strfind(line,END_STR);
+        valuePos = strfind(line,VALUE_STR);
+
+        if containsActiveEnergyString || containsBasalEnergyString
         
             start_energy_datetime = datetime(line(startDatePos + length(START_STR) + 1 : endDatePos - 3 - 6));
             end_energy_datetime =   datetime(line(endDatePos   + length(END_STR)   + 1 : valuePos   - 3 - 6));
@@ -77,6 +89,20 @@ while ~feof(fid)
                 active_calories = [active_calories; calories];
             else
                 warning('Hit line that didn''t have basal or active energy')
+            end
+        elseif containsSleepString
+            containsDeepSleepString = contains(line,DEEP_SLEEP_STR);
+            containsCoreSleepString = contains(line,CORE_SLEEP_STR);
+            containsRemSleepString = contains(line,REM_SLEEP_STR);
+            containsUnkSleepString = contains(line,UNK_SLEEP_STR);
+
+            if containsDeepSleepString || containsCoreSleepString || containsRemSleepString || containsUnkSleepString
+                start_sleep = datetime(line(startDatePos + length(START_STR) + 1 : endDatePos - 3 - 6));
+                end_sleep =   datetime(line(endDatePos   + length(END_STR)   + 1 : valuePos   - 3 - 6));
+
+                start_sleep_datetime = [start_sleep_datetime; start_sleep];
+                end_sleep_datetime = [end_sleep_datetime; end_sleep];
+                sleep_duration = [sleep_duration; seconds(end_sleep - start_sleep)];
             end
         end
     end
@@ -120,6 +146,21 @@ fprintf(fid,'Start Date/Time,End Date/Time,Calories (cal)\n');
 
 for ii = 1:length(basal_calories)
     fprintf(fid,'%s,%s,%1.3f\n', start_basal_energy_datetime(ii), end_basal_energy_datetime(ii), basal_calories(ii));
+end
+
+fclose(fid);
+
+%% Write out pruned sleep data
+
+fprintf('%s - Writing out pruned sleep data\n', datetime)
+
+fid = fopen('AppleWatchSleep.csv','w');
+
+fprintf(fid,'Start Date/Time,End Date/Time,Duration (secs)\n');
+
+for ii = 1:length(sleep_duration)
+    ii
+    fprintf('%s,%s,%1.1f\n', start_sleep_datetime(ii), end_sleep_datetime(ii), sleep_duration(ii))
 end
 
 fclose(fid);
