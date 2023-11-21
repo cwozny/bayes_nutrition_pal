@@ -7,143 +7,188 @@ fprintf('%s - Clearing everything out\n', datetime)
 close all
 clearvars
 
-%% Read in weight data
+%% See if we've already parsed the data
 
-fprintf('%s - Reading in weight data\n', datetime)
+dataLoaded = false;
 
-weight_datetime = [];
-weight = [];
-bmi = [];
-fat = [];
+if exist('parsed_data.mat','file')
 
-fid = fopen('FitbitAriaMeasurements.csv','r');
+    fprintf('%s - Loading already parsed data\n', datetime)
 
-line = fgetl(fid); % skip header line
-
-while ~feof(fid)
-    line = fgetl(fid);
-    tokens = split(line,',');
-    weight_datetime = [weight_datetime; datetime(tokens{1})];
-    weight = [weight; str2double(tokens{2})];
-    bmi = [bmi; str2double(tokens{3})];
-    fat = [fat; str2double(tokens{4})];
+    load parsed_data.mat
+    dataLoaded = true;
 end
 
-fclose(fid);
+%% Read in weight data
+
+if ~dataLoaded
+
+    fprintf('%s - Reading in weight data\n', datetime)
+
+    weight_datetime = [];
+    weight = [];
+    bmi = [];
+    fat = [];
+
+    fid = fopen('FitbitAriaMeasurements.csv','r');
+
+    line = fgetl(fid); % skip header line
+
+    while ~feof(fid)
+        line = fgetl(fid);
+        tokens = split(line,',');
+        weight_datetime = [weight_datetime; datetime(tokens{1})];
+        weight = [weight; str2double(tokens{2})];
+        bmi = [bmi; str2double(tokens{3})];
+        fat = [fat; str2double(tokens{4})];
+    end
+
+    fclose(fid);
+
+end
 
 %% Read in blood glucose/ketone data
 
-fprintf('%s - Reading in blood glucose/ketone data\n', datetime)
+if ~dataLoaded
 
-glucose_datetime = [];
-ketones_datetime = [];
-glucose = [];
-ketones = [];
+    fprintf('%s - Reading in blood glucose/ketone data\n', datetime)
 
-fid = fopen('KetoMojoReadings.csv','r');
+    glucose_datetime = [];
+    ketones_datetime = [];
+    glucose = [];
+    ketones = [];
 
-line = fgetl(fid); % skip header line
+    fid = fopen('KetoMojoReadings.csv','r');
 
-while ~feof(fid)
-    line = fgetl(fid);
-    tokens = split(line,',');
+    line = fgetl(fid); % skip header line
 
-    if strcmp(tokens{1},'ketone')
-        ketones_datetime = [ketones_datetime; datetime([tokens{4} ' ' tokens{5}])];
-        ketones = [ketones; str2double(tokens{2})];
-    elseif strcmp(tokens{1},'glucose')
-        glucose_datetime = [glucose_datetime; datetime([tokens{4} ' ' tokens{5}])];
-        glucose = [glucose; str2double(tokens{2})];
-    else
-        'hey'
+    while ~feof(fid)
+        line = fgetl(fid);
+        tokens = split(line,',');
+
+        if strcmp(tokens{1},'ketone')
+            ketones_datetime = [ketones_datetime; datetime([tokens{4} ' ' tokens{5}])];
+            ketones = [ketones; str2double(tokens{2})];
+        elseif strcmp(tokens{1},'glucose')
+            glucose_datetime = [glucose_datetime; datetime([tokens{4} ' ' tokens{5}])];
+            glucose = [glucose; str2double(tokens{2})];
+        else
+            'hey'
+        end
     end
-end
 
-fclose(fid);
+    fclose(fid);
+
+end
 
 %% Read in basal energy data
 
-fprintf('%s - Reading in basal energy data\n', datetime)
+if ~dataLoaded
 
-basal_start_datetime = [];
-basal_end_datetime = [];
-basal_calories = [];
+    fprintf('%s - Reading in basal energy data\n', datetime)
 
-fid = fopen('AppleWatchBasalEnergy.csv','r');
+    basal_start_datetime = [];
+    basal_end_datetime = [];
+    basal_calories = [];
 
-line = fgetl(fid); % skip header line
+    fid = fopen('AppleWatchBasalEnergy.csv','r');
 
-while ~feof(fid)
-    line = fgetl(fid);
-    tokens = split(line,',');
-    basal_start_datetime = [basal_start_datetime; datetime(tokens{1})];
-    basal_end_datetime = [basal_end_datetime; datetime(tokens{2})];
-    basal_calories = [basal_calories; str2double(tokens{3})];
+    line = fgetl(fid); % skip header line
+
+    while ~feof(fid)
+        line = fgetl(fid);
+        tokens = split(line,',');
+        basal_start_datetime = [basal_start_datetime; datetime(tokens{1})];
+        basal_end_datetime = [basal_end_datetime; datetime(tokens{2})];
+        basal_calories = [basal_calories; str2double(tokens{3})];
+    end
+
+    fclose(fid);
+
 end
-
-fclose(fid);
 
 %% Read in active energy data
 
-fprintf('%s - Reading in active energy data\n', datetime)
+if ~dataLoaded
 
-active_start_datetime = [];
-active_end_datetime = [];
-active_calories = [];
+    fprintf('%s - Reading in active energy data\n', datetime)
 
-fid = fopen('AppleWatchActiveEnergy.csv','r');
+    active_start_datetime = [];
+    active_end_datetime = [];
+    active_calories = [];
 
-line = fgetl(fid); % skip header line
+    fid = fopen('AppleWatchActiveEnergy.csv','r');
 
-while ~feof(fid)
-    line = fgetl(fid);
-    tokens = split(line,',');
-    active_start_datetime = [active_start_datetime; datetime(tokens{1})];
-    active_end_datetime = [active_end_datetime; datetime(tokens{2})];
-    active_calories = [active_calories; str2double(tokens{3})];
+    line = fgetl(fid); % skip header line
+
+    while ~feof(fid)
+        line = fgetl(fid);
+        tokens = split(line,',');
+        active_start_datetime = [active_start_datetime; datetime(tokens{1})];
+        active_end_datetime = [active_end_datetime; datetime(tokens{2})];
+        active_calories = [active_calories; str2double(tokens{3})];
+    end
+
+    fclose(fid);
+
 end
-
-fclose(fid);
 
 %% Read in nutrition data
 
-fprintf('%s - Reading in nutrition data\n', datetime)
+if ~dataLoaded
 
-nutrition_datetime = [];
-nutrition_calories = [];
-nutrition_total_carbs = [];
-nutrition_protein = [];
-nutrition_total_fats = [];
-nutrition_sugar = [];
-nutrition_fiber = [];
-nutrition_sugar_alcohol = [];
+    fprintf('%s - Reading in nutrition data\n', datetime)
 
-fid = fopen('FoodNomsPrunedData.csv','r');
+    nutrition_datetime = [];
+    nutrition_calories = [];
+    nutrition_total_carbs = [];
+    nutrition_protein = [];
+    nutrition_total_fats = [];
+    nutrition_sugar = [];
+    nutrition_fiber = [];
+    nutrition_sugar_alcohol = [];
 
-line = fgetl(fid); % skip header line
+    fid = fopen('FoodNomsPrunedData.csv','r');
 
-while ~feof(fid)
-    line = fgetl(fid);
-    tokens = split(line,',');
-    nutrition_datetime = [nutrition_datetime; datetime(tokens{1})];
-    nutrition_calories = [nutrition_calories; str2double(tokens{2})];
-    nutrition_total_carbs = [nutrition_total_carbs; str2double(tokens{3})];
-    nutrition_protein = [nutrition_protein; str2double(tokens{4})];
-    nutrition_total_fats = [nutrition_total_fats; str2double(tokens{5})];
-    nutrition_sugar = [nutrition_sugar; str2double(tokens{6})];
-    nutrition_fiber = [nutrition_fiber; str2double(tokens{7})];
-    nutrition_sugar_alcohol = [nutrition_sugar_alcohol; str2double(tokens{8})];
+    line = fgetl(fid); % skip header line
+
+    while ~feof(fid)
+        line = fgetl(fid);
+        tokens = split(line,',');
+        nutrition_datetime = [nutrition_datetime; datetime(tokens{1})];
+        nutrition_calories = [nutrition_calories; str2double(tokens{2})];
+        nutrition_total_carbs = [nutrition_total_carbs; str2double(tokens{3})];
+        nutrition_protein = [nutrition_protein; str2double(tokens{4})];
+        nutrition_total_fats = [nutrition_total_fats; str2double(tokens{5})];
+        nutrition_sugar = [nutrition_sugar; str2double(tokens{6})];
+        nutrition_fiber = [nutrition_fiber; str2double(tokens{7})];
+        nutrition_sugar_alcohol = [nutrition_sugar_alcohol; str2double(tokens{8})];
+    end
+
+    fclose(fid);
+
+    nutrition_calories(isnan(nutrition_calories)) = 0;
+    nutrition_total_carbs(isnan(nutrition_total_carbs)) = 0;
+    nutrition_protein(isnan(nutrition_protein)) = 0;
+    nutrition_total_fats(isnan(nutrition_total_fats)) = 0;
+    nutrition_sugar(isnan(nutrition_sugar)) = 0;
+    nutrition_fiber(isnan(nutrition_fiber)) = 0;
+    nutrition_sugar_alcohol(isnan(nutrition_sugar_alcohol)) = 0;
+
 end
 
-fclose(fid);
+%% Save intermediate .mat files
 
-nutrition_calories(isnan(nutrition_calories)) = 0;
-nutrition_total_carbs(isnan(nutrition_total_carbs)) = 0;
-nutrition_protein(isnan(nutrition_protein)) = 0;
-nutrition_total_fats(isnan(nutrition_total_fats)) = 0;
-nutrition_sugar(isnan(nutrition_sugar)) = 0;
-nutrition_fiber(isnan(nutrition_fiber)) = 0;
-nutrition_sugar_alcohol(isnan(nutrition_sugar_alcohol)) = 0;
+if ~dataLoaded
+
+    save('parsed_data.mat','weight_datetime','weight','bmi','fat', ...
+         'glucose_datetime','ketones_datetime','glucose','ketones', ...
+         'basal_start_datetime','basal_end_datetime','basal_calories', ...
+         'active_start_datetime','active_end_datetime','active_calories', ...
+         'nutrition_datetime','nutrition_calories','nutrition_total_carbs','nutrition_protein','nutrition_total_fats', ...
+         'nutrition_sugar','nutrition_fiber','nutrition_sugar_alcohol');
+
+end
 
 %% Plot data
 
@@ -214,101 +259,83 @@ fid = fopen('AggregatedData.csv','w');
 
 fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Start Fasting Glucose (mg/dL),Start Fasting Ketones (mmol/L),Active Energy (cal),Basal Energy (cal),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),End Weight (lbs),End Fasting Glucose (mg/dL),End Fasting Ketones (mmol/L)\n');
 
-startPeriod = [];
-endPeriod = [];
-startWeight = [];
-endWeight = [];
-activeCals = [];
-basalCals = [];
-nutritionCals = [];
-nutritionTotalCarbs = [];
-nutritionProtein = [];
-nutritionTotalFats = [];
-startFastingGlucose = [];
-endFastingGlucose = [];
-startFastingKetones = [];
-endFastingKetones = [];
-
 for ii = 2:length(weight_datetime)
-    beginEvalTime = weight_datetime(ii-1);
-    endEvalTime = weight_datetime(ii);
 
-    if duration(endEvalTime - beginEvalTime) < hours(29)
+    startPeriod = weight_datetime(ii-1);
+    endPeriod = weight_datetime(ii);
+
+    if duration(endPeriod - startPeriod) < hours(29)
 
         hasAllData = true;
 
-        startPeriod = [startPeriod; beginEvalTime];
-        endPeriod = [endPeriod; endEvalTime];
+        startPeriodWeight = weight(ii-1);
+        endPeriodWeight = weight(ii);
 
-        startWeight = [startWeight; weight(ii-1)];
-        endWeight = [endWeight; weight(ii)];
-
-        activeCalIdx = beginEvalTime <= active_start_datetime & active_start_datetime <= endEvalTime;
-        activeCals = [activeCals; sum(active_calories(activeCalIdx))];
+        activeCalIdx = startPeriod <= active_start_datetime & active_start_datetime <= endPeriod;
+        activeCals = sum(active_calories(activeCalIdx));
 
         if sum(activeCalIdx) == 0
             hasAllData = false;
-            warning('No active calorie data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No active calorie data for %s to %s', startPeriod, endPeriod)
         end
 
-        basalCalIdx = beginEvalTime <= basal_start_datetime & basal_start_datetime <= endEvalTime;
-        basalCals = [basalCals; sum(basal_calories(basalCalIdx))];
+        basalCalIdx = startPeriod <= basal_start_datetime & basal_start_datetime <= endPeriod;
+        basalCals = sum(basal_calories(basalCalIdx));
 
         if sum(basalCalIdx) == 0
             hasAllData = false;
-            warning('No basal calorie data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No basal calorie data for %s to %s', startPeriod, endPeriod)
         end
 
-        nutritionIdx = beginEvalTime <= nutrition_datetime & nutrition_datetime <= endEvalTime;
-        nutritionCals = [nutritionCals; sum(nutrition_calories(nutritionIdx))];
-        nutritionTotalCarbs = [nutritionTotalCarbs; sum(nutrition_total_carbs(nutritionIdx))];
-        nutritionProtein = [nutritionProtein; sum(nutrition_protein(nutritionIdx))];
-        nutritionTotalFats = [nutritionTotalFats; sum(nutrition_total_fats(nutritionIdx))];
+        nutritionIdx = startPeriod <= nutrition_datetime & nutrition_datetime <= endPeriod;
+        nutritionCals = sum(nutrition_calories(nutritionIdx));
+        nutritionTotalCarbs = sum(nutrition_total_carbs(nutritionIdx));
+        nutritionProtein = sum(nutrition_protein(nutritionIdx));
+        nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
 
         if sum(nutritionIdx) == 0
             hasAllData = false;
-            warning('No nutrition data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No nutrition data for %s to %s', startPeriod, endPeriod)
         end
 
-        startGlucoseIdx = beginEvalTime <= glucose_datetime & glucose_datetime <= beginEvalTime + hours(1);
-        endGlucoseIdx = endEvalTime <= glucose_datetime & glucose_datetime <= endEvalTime + hours(1);
+        startGlucoseIdx = startPeriod - hours(4) <= glucose_datetime & glucose_datetime <= startPeriod + hours(4);
+        endGlucoseIdx = endPeriod - hours(4) <= glucose_datetime & glucose_datetime <= endPeriod + hours(4);
 
         if sum(startGlucoseIdx) == 0
             hasAllData = false;
-            warning('No starting glucose data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No starting glucose data for %s to %s', startPeriod, endPeriod)
         end
 
         if sum(endGlucoseIdx) == 0
             hasAllData = false;
-            warning('No ending glucose data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No ending glucose data for %s to %s', startPeriod, endPeriod)
         end
 
-        startFastingGlucose = [startFastingGlucose; glucose(startGlucoseIdx)];
-        endFastingGlucose = [endFastingGlucose; glucose(endGlucoseIdx)];
+        startFastingGlucose = glucose(startGlucoseIdx);
+        endFastingGlucose = glucose(endGlucoseIdx);
 
-        startKetonesIdx = beginEvalTime <= ketones_datetime & ketones_datetime <= beginEvalTime + hours(1);
-        endKetonesIdx = endEvalTime <= ketones_datetime & ketones_datetime <= endEvalTime + hours(1);
+        startKetonesIdx = startPeriod - hours(4) <= ketones_datetime & ketones_datetime <= startPeriod + hours(4);
+        endKetonesIdx = endPeriod - hours(4) <= ketones_datetime & ketones_datetime <= endPeriod + hours(4);
 
         if sum(startKetonesIdx) == 0
             hasAllData = false;
-            warning('No starting ketone data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No starting ketone data for %s to %s', startPeriod, endPeriod)
         end
 
         if sum(endKetonesIdx) == 0
             hasAllData = false;
-            warning('No ending ketone data for %s to %s', beginEvalTime, endEvalTime)
+            warning('No ending ketone data for %s to %s', startPeriod, endPeriod)
         end
 
-        startFastingKetones = [startFastingKetones; ketones(startKetonesIdx)];
-        endFastingKetones = [endFastingKetones; ketones(endKetonesIdx)];
+        startFastingKetones = ketones(startKetonesIdx);
+        endFastingKetones = ketones(endKetonesIdx);
 
-        if hasAllData
-            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', startPeriod(end), endPeriod(end), ...
-                startWeight(end), startFastingGlucose(end), startFastingKetones(end), ...
-                activeCals(end), basalCals(end), nutritionCals(end), ...
-                nutritionTotalCarbs(end), nutritionProtein(end), nutritionTotalFats(end), ...
-                endWeight(end), endFastingGlucose(end), endFastingKetones(end));
-        end
+        fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', ...
+            startPeriod, endPeriod, ...
+            startPeriodWeight, startFastingGlucose, startFastingKetones, ...
+            activeCals, basalCals, nutritionCals, ...
+            nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, ...
+            endPeriodWeight, endFastingGlucose, endFastingKetones);
     end
 end
 
