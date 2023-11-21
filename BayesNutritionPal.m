@@ -272,30 +272,39 @@ for ii = 2:length(weight_datetime)
         endPeriodWeight = weight(ii);
 
         activeCalIdx = startPeriod <= active_start_datetime & active_start_datetime <= endPeriod;
-        activeCals = sum(active_calories(activeCalIdx));
 
         if sum(activeCalIdx) == 0
             hasAllData = false;
             warning('No active calorie data for %s to %s', startPeriod, endPeriod)
+            activeCals = nan;
+        else
+            activeCals = sum(active_calories(activeCalIdx));
         end
 
         basalCalIdx = startPeriod <= basal_start_datetime & basal_start_datetime <= endPeriod;
-        basalCals = sum(basal_calories(basalCalIdx));
 
         if sum(basalCalIdx) == 0
             hasAllData = false;
             warning('No basal calorie data for %s to %s', startPeriod, endPeriod)
+            basalCals = nan;
+        else
+            basalCals = sum(basal_calories(basalCalIdx));
         end
 
         nutritionIdx = startPeriod <= nutrition_datetime & nutrition_datetime <= endPeriod;
-        nutritionCals = sum(nutrition_calories(nutritionIdx));
-        nutritionTotalCarbs = sum(nutrition_total_carbs(nutritionIdx));
-        nutritionProtein = sum(nutrition_protein(nutritionIdx));
-        nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
 
         if sum(nutritionIdx) == 0
             hasAllData = false;
             warning('No nutrition data for %s to %s', startPeriod, endPeriod)
+            nutritionCals = nan;
+            nutritionTotalCarbs = nan;
+            nutritionProtein = nan;
+            nutritionTotalFats = nan;
+        else
+            nutritionCals = sum(nutrition_calories(nutritionIdx));
+            nutritionTotalCarbs = sum(nutrition_total_carbs(nutritionIdx));
+            nutritionProtein = sum(nutrition_protein(nutritionIdx));
+            nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
         end
 
         startGlucoseIdx = startPeriod - hours(4) <= glucose_datetime & glucose_datetime <= startPeriod + hours(4);
@@ -304,15 +313,18 @@ for ii = 2:length(weight_datetime)
         if sum(startGlucoseIdx) == 0
             hasAllData = false;
             warning('No starting glucose data for %s to %s', startPeriod, endPeriod)
+            startFastingGlucose = nan;
+        else
+            startFastingGlucose = glucose(startGlucoseIdx);
         end
 
         if sum(endGlucoseIdx) == 0
             hasAllData = false;
             warning('No ending glucose data for %s to %s', startPeriod, endPeriod)
+            endFastingGlucose = nan;
+        else
+            endFastingGlucose = glucose(endGlucoseIdx);
         end
-
-        startFastingGlucose = glucose(startGlucoseIdx);
-        endFastingGlucose = glucose(endGlucoseIdx);
 
         startKetonesIdx = startPeriod - hours(4) <= ketones_datetime & ketones_datetime <= startPeriod + hours(4);
         endKetonesIdx = endPeriod - hours(4) <= ketones_datetime & ketones_datetime <= endPeriod + hours(4);
@@ -320,22 +332,27 @@ for ii = 2:length(weight_datetime)
         if sum(startKetonesIdx) == 0
             hasAllData = false;
             warning('No starting ketone data for %s to %s', startPeriod, endPeriod)
+            startFastingKetones = nan;
+        else
+            startFastingKetones = ketones(startKetonesIdx);
         end
 
         if sum(endKetonesIdx) == 0
             hasAllData = false;
             warning('No ending ketone data for %s to %s', startPeriod, endPeriod)
+            endFastingKetones = nan;
+        else
+            endFastingKetones = ketones(endKetonesIdx);
         end
 
-        startFastingKetones = ketones(startKetonesIdx);
-        endFastingKetones = ketones(endKetonesIdx);
-
-        fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', ...
-            startPeriod, endPeriod, ...
-            startPeriodWeight, startFastingGlucose, startFastingKetones, ...
-            activeCals, basalCals, nutritionCals, ...
-            nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, ...
-            endPeriodWeight, endFastingGlucose, endFastingKetones);
+        if hasAllData
+            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.0f,%1.1f\n', ...
+                startPeriod, endPeriod, ...
+                startPeriodWeight, startFastingGlucose, startFastingKetones, ...
+                activeCals, basalCals, nutritionCals, ...
+                nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, ...
+                endPeriodWeight, endFastingGlucose, endFastingKetones);
+        end
     end
 end
 
