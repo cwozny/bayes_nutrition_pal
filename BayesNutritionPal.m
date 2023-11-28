@@ -133,6 +133,32 @@ if ~dataLoaded
 
 end
 
+%% Read in sleep data
+
+if ~dataLoaded
+
+    fprintf('%s - Reading in sleep data\n', datetime)
+
+    sleep_start_datetime = [];
+    sleep_end_datetime = [];
+    sleep_duration = [];
+
+    fid = fopen('AppleWatchSleep.csv','r');
+
+    line = fgetl(fid); % skip header line
+
+    while ~feof(fid)
+        line = fgetl(fid);
+        tokens = split(line,',');
+        sleep_start_datetime = [sleep_start_datetime; datetime(tokens{1})];
+        sleep_end_datetime = [sleep_end_datetime; datetime(tokens{2})];
+        sleep_duration = [sleep_duration; str2double(tokens{3})];
+    end
+
+    fclose(fid);
+
+end
+
 %% Read in nutrition data
 
 if ~dataLoaded
@@ -185,6 +211,7 @@ if ~dataLoaded
          'glucose_datetime','ketones_datetime','glucose','ketones', ...
          'basal_start_datetime','basal_end_datetime','basal_calories', ...
          'active_start_datetime','active_end_datetime','active_calories', ...
+         'sleep_start_datetime','sleep_end_datetime','sleep_duration', ...
          'nutrition_datetime','nutrition_calories','nutrition_total_carbs','nutrition_protein','nutrition_total_fats', ...
          'nutrition_sugar','nutrition_fiber','nutrition_sugar_alcohol');
 
@@ -257,7 +284,7 @@ saveas(hFig,'ketone_histogram','png')
 
 fid = fopen('AggregatedData.csv','w');
 
-fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Start Fasting Glucose (mg/dL),Start Fasting Ketones (mmol/L),Active Energy (cal),Basal Energy (cal),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),End Weight (lbs),Weight Difference (lbs),End Fasting Glucose (mg/dL),End Fasting Ketones (mmol/L)\n');
+fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Start Fasting Glucose (mg/dL),Start Fasting Ketones (mmol/L),Active Energy (cal),Basal Energy (cal),Sleep (sec),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),Sugar (g),Fiber (g),Sugar Alcohols (g),End Weight (lbs),Weight Difference (lbs),End Fasting Glucose (mg/dL),End Fasting Ketones (mmol/L)\n');
 
 for ii = 2:length(weight_datetime)
 
@@ -291,6 +318,16 @@ for ii = 2:length(weight_datetime)
             basalCals = sum(basal_calories(basalCalIdx));
         end
 
+        sleepIdx = startPeriod <= sleep_start_datetime & sleep_end_datetime <= endPeriod;
+
+        if sum(sleepIdx) == 0
+            hasAllData = false;
+            warning('No sleep data for %s to %s', startPeriod, endPeriod)
+            sleepSecs = nan;
+        else
+            sleepSecs = sum(sleep_duration(sleepIdx));
+        end
+
         nutritionIdx = startPeriod <= nutrition_datetime & nutrition_datetime <= endPeriod;
 
         if sum(nutritionIdx) == 0
@@ -300,11 +337,17 @@ for ii = 2:length(weight_datetime)
             nutritionTotalCarbs = nan;
             nutritionProtein = nan;
             nutritionTotalFats = nan;
+            nutritionSugar = nan;
+            nutritionFiber = nan;
+            nutritionSugarAlcohols = nan;
         else
             nutritionCals = sum(nutrition_calories(nutritionIdx));
             nutritionTotalCarbs = sum(nutrition_total_carbs(nutritionIdx));
             nutritionProtein = sum(nutrition_protein(nutritionIdx));
             nutritionTotalFats = sum(nutrition_total_fats(nutritionIdx));
+            nutritionSugar = sum(nutrition_sugar(nutritionIdx));
+            nutritionFiber = sum(nutrition_fiber(nutritionIdx));
+            nutritionSugarAlcohols = sum(nutrition_sugar_alcohol(nutritionIdx));
         end
 
         startGlucoseIdx = startPeriod - hours(4) <= glucose_datetime & glucose_datetime <= startPeriod + hours(4);
@@ -346,11 +389,12 @@ for ii = 2:length(weight_datetime)
         end
 
         if hasAllData
-            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.2f,%1.0f,%1.1f\n', ...
+            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.2f,%1.0f,%1.1f\n', ...
                 startPeriod, endPeriod, ...
                 startPeriodWeight, startFastingGlucose, startFastingKetones, ...
-                activeCals, basalCals, nutritionCals, ...
+                activeCals, basalCals, sleepSecs, nutritionCals, ...
                 nutritionTotalCarbs, nutritionProtein, nutritionTotalFats, ...
+                nutritionSugar, nutritionFiber, nutritionSugarAlcohols, ...
                 endPeriodWeight, (endPeriodWeight-startPeriodWeight), endFastingGlucose, endFastingKetones);
         end
     end
