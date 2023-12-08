@@ -22,6 +22,35 @@ opts.DataLines = [2, Inf];
 opts.Delimiter = ",";
 
 % Specify column names and types
+opts.VariableNames = ["StartPeriod", "EndPeriod", "Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", "Var10", "Var11", "Var12", "Var13", "Var14", "Var15", "Var16", "Var17", "Var18", "Var19"];
+opts.SelectedVariableNames = ["StartPeriod", "EndPeriod"];
+opts.VariableTypes = ["datetime", "datetime", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string", "string"];
+
+% Specify file level properties
+opts.ExtraColumnsRule = "ignore";
+opts.EmptyLineRule = "read";
+
+% Specify variable properties
+opts = setvaropts(opts, ["Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", "Var10", "Var11", "Var12", "Var13", "Var14", "Var15", "Var16", "Var17", "Var18", "Var19"], "WhitespaceRule", "preserve");
+opts = setvaropts(opts, ["Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", "Var10", "Var11", "Var12", "Var13", "Var14", "Var15", "Var16", "Var17", "Var18", "Var19"], "EmptyFieldRule", "auto");
+opts = setvaropts(opts, "StartPeriod", "InputFormat", "dd-MMM-yyyy HH:mm:ss");
+opts = setvaropts(opts, "EndPeriod", "InputFormat", "dd-MMM-yyyy HH:mm:ss");
+
+% Import the data
+PeriodData = readtable("AggregatedData.csv", opts);
+PeriodData = PeriodData{:,:}; % turn in to datetime matrix
+
+%% Clear temporary variables
+clear opts
+
+%% Set up the Import Options and import the data
+opts = delimitedTextImportOptions("NumVariables", 19);
+
+% Specify range and delimiter
+opts.DataLines = [2, Inf];
+opts.Delimiter = ",";
+
+% Specify column names and types
 opts.VariableNames = ["Var1", "Var2", "StartWeightlbs", "StartFastingGlucosemgdL", "StartFastingKetonesmmolL", "ActiveEnergycal", "BasalEnergycal", "Sleepsec", "NutritionEnergycal", "TotalCarbsg", "Proteing", "TotalFatsg", "Sugarg", "Fiberg", "SugarAlcoholsg", "EndWeightlbs", "WeightDifferencelbs", "EndFastingGlucosemgdL", "EndFastingKetonesmmolL"];
 opts.SelectedVariableNames = ["StartWeightlbs", "StartFastingGlucosemgdL", "StartFastingKetonesmmolL", "ActiveEnergycal", "BasalEnergycal", "Sleepsec", "NutritionEnergycal", "TotalCarbsg", "Proteing", "TotalFatsg", "Sugarg", "Fiberg", "SugarAlcoholsg", "EndWeightlbs", "WeightDifferencelbs", "EndFastingGlucosemgdL", "EndFastingKetonesmmolL"];
 opts.VariableTypes = ["string", "string", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double"];
