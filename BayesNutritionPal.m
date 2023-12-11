@@ -284,7 +284,7 @@ saveas(hFig,'ketone_histogram','png')
 
 fid = fopen('AggregatedData.csv','w');
 
-fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Start Fasting Glucose (mg/dL),Start Fasting Ketones (mmol/L),Active Energy (cal),Basal Energy (cal),Sleep (sec),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),Sugar (g),Fiber (g),Sugar Alcohols (g),End Weight (lbs),Weight Difference (lbs),End Fasting Glucose (mg/dL),End Fasting Ketones (mmol/L)\n');
+fprintf(fid, 'Start Period,End Period,Start Weight (lbs),Start Fasting Glucose (mg/dL),Start Fasting Ketones (mmol/L),Active Energy (cal),Basal Energy (cal),Sleep (sec),Nutrition Energy (cal),Total Carbs (g),Protein (g),Total Fats (g),Sugar (g),Fiber (g),Sugar Alcohols (g),Bias,End Weight (lbs),Weight Difference (lbs),End Fasting Glucose (mg/dL),End Fasting Ketones (mmol/L)\n');
 
 for ii = 2:length(weight_datetime)
 
@@ -389,7 +389,7 @@ for ii = 2:length(weight_datetime)
         end
 
         if hasAllData
-            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.2f,%1.2f,%1.0f,%1.1f\n', ...
+            fprintf(fid,'%s,%s,%1.2f,%1.0f,%1.1f,%1.1f,%1.1f,%1.0f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,%1.1f,1.0,%1.2f,%1.2f,%1.0f,%1.1f\n', ...
                 startPeriod, endPeriod, ...
                 startPeriodWeight, startFastingGlucose, startFastingKetones, ...
                 activeCals, basalCals, sleepSecs, nutritionCals, ...
