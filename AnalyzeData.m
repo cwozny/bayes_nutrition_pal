@@ -104,30 +104,34 @@ grid on
 xlabel('Calorie Delta (cals)')
 ylabel('Weight Change (lbs)')
 
+%% Drop sleep for now
+
+AggregatedData(:,6) = [];
+
 %% Perform linear regression
 
 fprintf('Unnormalized (Weight Delta Target)\n');
 
-x = AggregatedData(:,2:13);
-y = AggregatedData(:,15:17);
+x = AggregatedData(:,2:12);
+y = AggregatedData(:,14:16);
 b = x\y
 
 fprintf('Unnormalized (Weight Delta Target) w/ Bias\n');
 
-x = [AggregatedData(:,2:13) ones(length(AggregatedData),1)];
-y = AggregatedData(:,15:17);
+x = [AggregatedData(:,2:12) ones(length(AggregatedData),1)];
+y = AggregatedData(:,14:16);
 b = x\y
 
 fprintf('Unnormalized (Absolute Weight Target)\n');
 
-x = AggregatedData(:,1:13);
-y = AggregatedData(:,[14 16 17]);
+x = AggregatedData(:,1:12);
+y = AggregatedData(:,[13 15 16]);
 b = x\y
 
 fprintf('Unnormalized (Absolute Weight Target) w/ Bias Term\n');
 
-x = [AggregatedData(:,1:13) ones(length(AggregatedData),1)];
-y = AggregatedData(:,[14 16 17]);
+x = [AggregatedData(:,1:12) ones(length(AggregatedData),1)];
+y = AggregatedData(:,[13 15 16]);
 b = x\y
 
 % features
@@ -136,41 +140,40 @@ NormalizedData(:,2) = AggregatedData(:,2) / 110; % blood glucose
 NormalizedData(:,3) = AggregatedData(:,3) / 5; % ketones
 NormalizedData(:,4) = AggregatedData(:,4) / 2000; % active energy
 NormalizedData(:,5) = AggregatedData(:,5) / 2500; % basal energy
-NormalizedData(:,6) = AggregatedData(:,6) / 35000; % sleep
-NormalizedData(:,7) = AggregatedData(:,7) / 6500; % calories
-NormalizedData(:,8) = AggregatedData(:,8) / 400; % total carbs 
-NormalizedData(:,9) = AggregatedData(:,9) / 350; % protein
-NormalizedData(:,10) = AggregatedData(:,10) / 450; % total fats
-NormalizedData(:,11) = AggregatedData(:,11) / 175; % sugar
-NormalizedData(:,12) = AggregatedData(:,12) / 125; % fiber
-NormalizedData(:,13) = AggregatedData(:,13) / 125; % sugar alcohols
+NormalizedData(:,6) = AggregatedData(:,6) / 6500; % calories
+NormalizedData(:,7) = AggregatedData(:,7) / 400; % total carbs 
+NormalizedData(:,8) = AggregatedData(:,8) / 350; % protein
+NormalizedData(:,9) = AggregatedData(:,9) / 450; % total fats
+NormalizedData(:,10) = AggregatedData(:,10) / 175; % sugar
+NormalizedData(:,11) = AggregatedData(:,11) / 125; % fiber
+NormalizedData(:,12) = AggregatedData(:,12) / 125; % sugar alcohols
 
 % targets
-NormalizedData(:,14) = AggregatedData(:,14) / 230; % end weight
-NormalizedData(:,15) = AggregatedData(:,15) / 10; % weight difference
-NormalizedData(:,16) = AggregatedData(:,16) / 110; % blood glucose
-NormalizedData(:,17) = AggregatedData(:,17) / 5; % ketones
+NormalizedData(:,13) = AggregatedData(:,13) / 230; % end weight
+NormalizedData(:,14) = AggregatedData(:,14) / 10; % weight difference
+NormalizedData(:,15) = AggregatedData(:,15) / 110; % blood glucose
+NormalizedData(:,16) = AggregatedData(:,16) / 5; % ketones
 
 fprintf('Normalized (Weight Delta Target)\n');
 
-x = NormalizedData(:,2:13);
-y = NormalizedData(:,15:17);
+x = NormalizedData(:,2:12);
+y = NormalizedData(:,14:16);
 b = x\y
 
 fprintf('Normalized (Weight Delta Target) w/ Bias Term\n');
 
-x = [NormalizedData(:,2:13) ones(length(NormalizedData),1)];
-y = NormalizedData(:,15:17);
+x = [NormalizedData(:,2:12) ones(length(NormalizedData),1)];
+y = NormalizedData(:,14:16);
 b = x\y
 
 fprintf('Normalized (Absolute Weight Target)\n');
 
-x = NormalizedData(:,1:13);
-y = NormalizedData(:,[14 16 17]);
+x = NormalizedData(:,1:12);
+y = NormalizedData(:,[13 15 16]);
 b = x\y
 
 fprintf('Normalized (Absolute Weight Target) w/ Bias Term\n');
 
-x = [NormalizedData(:,1:13) ones(length(NormalizedData),1)];
-y = NormalizedData(:,[14 16 17]);
+x = [NormalizedData(:,1:12) ones(length(NormalizedData),1)];
+y = NormalizedData(:,[13 15 16]);
 b = x\y
