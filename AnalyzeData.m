@@ -91,7 +91,7 @@ N = length(AggregatedData);
 
 %% Linear regression with unnormalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
 
 inp = [1:5 7:13];
 outp = [15 17:18];
@@ -103,7 +103,7 @@ y = AggregatedData(:,outp);
 
 %% Linear regression with unnormalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
 
 inp = [2:5 7:13];
 outp = [16:18];
@@ -115,7 +115,7 @@ y = AggregatedData(:,outp);
 
 %% Linear regression with unnormalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
 
 inp = [1:5 7:13];
 outp = [15:18];
@@ -127,7 +127,7 @@ y = AggregatedData(:,outp);
 
 %% Linear regression with unnormalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
 
 inp = [1:5 7:14];
 outp = [15 17:18];
@@ -139,7 +139,7 @@ y = AggregatedData(:,outp);
 
 %% Linear regression with unnormalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
 
 inp = [2:5 7:14];
 outp = [16:18];
@@ -151,7 +151,7 @@ y = AggregatedData(:,outp);
 
 %% Linear regression with unnormalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
 
 inp = [1:5 7:14];
 outp = [15:18];
@@ -187,7 +187,7 @@ NormalizedData(:,18) = AggregatedData(:,18) / 5; % ketones
 
 %% Linear regression with normalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
 
 inp = [1:5 7:13];
 outp = [15 17:18];
@@ -199,7 +199,7 @@ y = NormalizedData(:,outp);
 
 %% Linear regression with normalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
 
 inp = [2:5 7:13];
 outp = [16:18];
@@ -211,7 +211,7 @@ y = NormalizedData(:,outp);
 
 %% Linear regression with normalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
 
 inp = [1:5 7:13];
 outp = [15:18];
@@ -223,7 +223,7 @@ y = NormalizedData(:,outp);
 
 %% Linear regression with normalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
 
 inp = [1:5 7:14];
 outp = [15 17:18];
@@ -235,7 +235,7 @@ y = NormalizedData(:,outp);
 
 %% Linear regression with normalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
 
 inp = [2:5 7:14];
 outp = [16:18];
@@ -247,7 +247,7 @@ y = NormalizedData(:,outp);
 
 %% Linear regression with normalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
+fprintf("**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
 
 inp = [1:5 7:14];
 outp = [15:18];
