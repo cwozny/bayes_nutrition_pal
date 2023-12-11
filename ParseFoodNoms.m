@@ -30,11 +30,14 @@ sugar = [];
 fiber = [];
 sugar_alcohols = [];
 
+lineNumber = 1;
+
 fid = fopen(fullfile(path,file),'r');
 
 line = fgetl(fid); % skip header line
 
 while ~feof(fid)
+    lineNumber = lineNumber + 1;
     line = fgetl(fid);
     tokens = strrep(split(line,'","'),"""",'');
 
