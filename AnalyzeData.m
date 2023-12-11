@@ -91,10 +91,34 @@ N = length(AggregatedData);
 
 %% Linear regression with unnormalized data and no bias term
 
-fprintf("\n**** LINEAR REGRESSION\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
 
 inp = [1:5 7:13];
-outp = 15:18;
+outp = [15 17:18];
+
+x = AggregatedData(:,inp);
+y = AggregatedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with unnormalized data and no bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
+
+inp = [2:5 7:13];
+outp = [16:18];
+
+x = AggregatedData(:,inp);
+y = AggregatedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with unnormalized data and no bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=FALSE\tBIAS=FALSE ****\n\n")
+
+inp = [1:5 7:13];
+outp = [15:18];
 
 x = AggregatedData(:,inp);
 y = AggregatedData(:,outp);
@@ -103,17 +127,41 @@ y = AggregatedData(:,outp);
 
 %% Linear regression with unnormalized data and bias term
 
-fprintf("\n**** LINEAR REGRESSION\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
 
 inp = [1:5 7:14];
-outp = 15:18;
+outp = [15 17:18];
 
 x = AggregatedData(:,inp);
 y = AggregatedData(:,outp);
 
 [b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
 
-%% Plot interesting stuff
+%% Linear regression with unnormalized data and bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
+
+inp = [2:5 7:14];
+outp = [16:18];
+
+x = AggregatedData(:,inp);
+y = AggregatedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with unnormalized data and bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=FALSE\tBIAS=TRUE ****\n\n")
+
+inp = [1:5 7:14];
+outp = [15:18];
+
+x = AggregatedData(:,inp);
+y = AggregatedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Normalize data
 
 % features
 NormalizedData(:,1) = AggregatedData(:,1) / 230; % starting weight
@@ -121,16 +169,90 @@ NormalizedData(:,2) = AggregatedData(:,2) / 110; % blood glucose
 NormalizedData(:,3) = AggregatedData(:,3) / 5; % ketones
 NormalizedData(:,4) = AggregatedData(:,4) / 2000; % active energy
 NormalizedData(:,5) = AggregatedData(:,5) / 2500; % basal energy
-NormalizedData(:,6) = AggregatedData(:,6) / 6500; % calories
-NormalizedData(:,7) = AggregatedData(:,7) / 400; % total carbs 
-NormalizedData(:,8) = AggregatedData(:,8) / 350; % protein
-NormalizedData(:,9) = AggregatedData(:,9) / 450; % total fats
-NormalizedData(:,10) = AggregatedData(:,10) / 175; % sugar
-NormalizedData(:,11) = AggregatedData(:,11) / 125; % fiber
-NormalizedData(:,12) = AggregatedData(:,12) / 125; % sugar alcohols
+NormalizedData(:,6) = AggregatedData(:,6) / 35000; % sleep
+NormalizedData(:,7) = AggregatedData(:,7) / 6500; % calories
+NormalizedData(:,8) = AggregatedData(:,8) / 400; % total carbs 
+NormalizedData(:,9) = AggregatedData(:,9) / 350; % protein
+NormalizedData(:,10) = AggregatedData(:,10) / 450; % total fats
+NormalizedData(:,11) = AggregatedData(:,11) / 175; % sugar
+NormalizedData(:,12) = AggregatedData(:,12) / 125; % fiber
+NormalizedData(:,13) = AggregatedData(:,13) / 125; % sugar alcohols
+NormalizedData(:,14) = AggregatedData(:,14); % bias term doesn't need to be normalized
 
 % targets
-NormalizedData(:,13) = AggregatedData(:,13) / 230; % end weight
-NormalizedData(:,14) = AggregatedData(:,14) / 10; % weight difference
-NormalizedData(:,15) = AggregatedData(:,15) / 110; % blood glucose
-NormalizedData(:,16) = AggregatedData(:,16) / 5; % ketones
+NormalizedData(:,15) = AggregatedData(:,15) / 230; % end weight
+NormalizedData(:,16) = AggregatedData(:,16) / 10; % weight difference
+NormalizedData(:,17) = AggregatedData(:,17) / 110; % blood glucose
+NormalizedData(:,18) = AggregatedData(:,18) / 5; % ketones
+
+%% Linear regression with normalized data and no bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
+
+inp = [1:5 7:13];
+outp = [15 17:18];
+
+x = NormalizedData(:,inp);
+y = NormalizedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with normalized data and no bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
+
+inp = [2:5 7:13];
+outp = [16:18];
+
+x = NormalizedData(:,inp);
+y = NormalizedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with normalized data and no bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=TRUE\tBIAS=FALSE ****\n\n")
+
+inp = [1:5 7:13];
+outp = [15:18];
+
+x = NormalizedData(:,inp);
+y = NormalizedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with normalized data and bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=ABSOLUTE\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
+
+inp = [1:5 7:14];
+outp = [15 17:18];
+
+x = NormalizedData(:,inp);
+y = NormalizedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with normalized data and bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=DELTA\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
+
+inp = [2:5 7:14];
+outp = [16:18];
+
+x = NormalizedData(:,inp);
+y = NormalizedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
+
+%% Linear regression with normalized data and bias term
+
+fprintf("\n**** LINEAR REGRESSION\tTARGET WEIGHT=BOTH\tNORMALIZATION=TRUE\tBIAS=TRUE ****\n\n")
+
+inp = [1:5 7:14];
+outp = [15:18];
+
+x = NormalizedData(:,inp);
+y = NormalizedData(:,outp);
+
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
