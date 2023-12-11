@@ -99,7 +99,7 @@ outp = 15:18;
 x = AggregatedData(:,inp);
 y = AggregatedData(:,outp);
 
-[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp));
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
 
 %% Linear regression with unnormalized data and bias term
 
@@ -111,7 +111,7 @@ outp = 15:18;
 x = AggregatedData(:,inp);
 y = AggregatedData(:,outp);
 
-[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp));
+[b,mae,rmse,mse] = LinearRegressionWithKFolds(x, y, K, features(inp), features(outp), false);
 
 %% Plot interesting stuff
 

@@ -1,4 +1,4 @@
-function [b,mae,rmse,mse] = LinearRegressionWithKFolds(x,y,K,features,targets)
+function [b,mae,rmse,mse] = LinearRegressionWithKFolds(x,y,K,features,targets,print_each_fold)
 
     n = size(x,1);
 
@@ -25,27 +25,32 @@ function [b,mae,rmse,mse] = LinearRegressionWithKFolds(x,y,K,features,targets)
         mse(k) = mean(vecnorm(y_delta,2,2).^2);
     end
 
-    for k = 1:K
+    if print_each_fold
 
-        fprintf("K = %d\tMAE = %f\tRMSE = %f\tMSE = %f\n", k, mae(k), rmse(k), mse(k))
+        for k = 1:K
 
-        fprintf("Inp/Out\t")
+            fprintf("K = %d\tMAE = %f\tRMSE = %f\tMSE = %f\n\n", k, mae(k), rmse(k), mse(k))
 
-        for c = 1:length(targets)
-            fprintf("\t%s", targets{c})
-        end
+            fprintf("Inp/Out\t")
 
-        fprintf("\n")
-
-        for r = 1:length(features)
-            fprintf("%s\t", features{r})
             for c = 1:length(targets)
-                fprintf("\t%1.7f", b(k,r,c))
+                fprintf("\t%s", targets{c})
             end
+
+            fprintf("\n")
+
+            for r = 1:length(features)
+                fprintf("%s\t", features{r})
+
+                for c = 1:length(targets)
+                    fprintf("\t%1.7f", b(k,r,c))
+                end
+
+                fprintf("\n")
+            end
+
             fprintf("\n")
         end
-
-        fprintf("\n")
     end
 
     med_b = squeeze(median(b));
@@ -58,5 +63,25 @@ function [b,mae,rmse,mse] = LinearRegressionWithKFolds(x,y,K,features,targets)
     med_rmse = mean(vecnorm(y_delta,2,2));
     med_mse = mean(vecnorm(y_delta,2,2).^2);
 
-    fprintf("MED\tMAE = %f\tRMSE = %f\tMSE = %f\n", med_mae, med_rmse, med_mse)
+    fprintf("MED\tMAE = %f\tRMSE = %f\tMSE = %f\n\n", med_mae, med_rmse, med_mse)
+
+    fprintf("Inp/Out\t")
+
+    for c = 1:length(targets)
+        fprintf("\t%s", targets{c})
+    end
+
+    fprintf("\n")
+
+    for r = 1:length(features)
+        fprintf("%s\t", features{r})
+
+        for c = 1:length(targets)
+            fprintf("\t%1.7f", med_b(r,c))
+        end
+
+        fprintf("\n")
+    end
+
+    fprintf("\n")
 end
