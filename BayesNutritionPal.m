@@ -321,7 +321,7 @@ for ii = 2:length(weight_datetime)
         sleepIdx = startPeriod <= sleep_start_datetime & sleep_end_datetime <= endPeriod;
 
         if sum(sleepIdx) == 0
-            hasAllData = false;
+            %hasAllData = false;
             warning('No sleep data for %s to %s', startPeriod, endPeriod)
             sleepSecs = nan;
         else
