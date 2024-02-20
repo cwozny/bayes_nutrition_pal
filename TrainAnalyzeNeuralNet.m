@@ -27,3 +27,19 @@ data = readtable("AggregatedData.csv", opts);
 
 %% Clear temporary variables
 clear opts
+
+%% Train the network
+
+dataMat = data{:,:};
+
+inp = [1:5 7:13];
+outp = [15 17:18];
+
+x = dataMat(:,inp)';
+y = dataMat(:,outp)';
+
+net = feedforwardnet(10);
+net = configure(net,x,y);
+net = train(net,x,y);
+
+y2 = net(x);
